@@ -22,7 +22,7 @@ jobs:
         go-version: '^1.17'
 
     - name: Cache Go modules
-      uses: actions/cache@v2.1.6
+      uses: actions/cache@v2.1.7
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-build-codegen-${{ hashFiles('**/go.sum') }}
@@ -59,7 +59,7 @@ jobs:
           fetch-depth: 0
 
       - name: Cache Docker layers
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -85,7 +85,7 @@ jobs:
         go-version: '^1.17'
 
     - name: cache go modules
-      uses: actions/cache@v2.1.6
+      uses: actions/cache@v2.1.7
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-build-codegen-${{ hashFiles('**/go.sum') }}
@@ -117,7 +117,7 @@ jobs:
         go-version: '^1.17'
 
     - name: cache go modules
-      uses: actions/cache@v2.1.6
+      uses: actions/cache@v2.1.7
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-build-codegen-${{ hashFiles('**/go.sum') }}
@@ -132,7 +132,7 @@ jobs:
     - name: run integration tests
       run: make test.integration.enterprise.postgres
       env:
-        KONG_LICENSE_DATA: ${{ secrets.KONG_ENTERPRISE_LICENSE }}
+        KONG_LICENSE_DATA: ${{ secrets.KONG_LICENSE_DATA }}
 
     - name: collect test coverage
       uses: actions/upload-artifact@v2.2.4
@@ -150,7 +150,7 @@ jobs:
         go-version: '^1.17'
 
     - name: cache go modules
-      uses: actions/cache@v2.1.6
+      uses: actions/cache@v2.1.7
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-build-codegen-${{ hashFiles('**/go.sum') }}
@@ -181,7 +181,7 @@ jobs:
         go-version: '^1.17'
 
     - name: cache go modules
-      uses: actions/cache@v2.1.6
+      uses: actions/cache@v2.1.7
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-build-codegen-${{ hashFiles('**/go.sum') }}

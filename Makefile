@@ -2,7 +2,7 @@
 # Configuration
 # ------------------------------------------------------------------------------
 
-TAG?=2.0.4
+TAG?=$(shell git describe --tags)
 REGISTRY?=kong
 REPO_INFO=$(shell git config --get remote.origin.url)
 REPO_URL=github.com/kong/kubernetes-ingress-controller
@@ -159,9 +159,19 @@ generate.clientsets: client-gen
 
 .PHONY: container
 container:
-	docker build \
+	docker buildx build \
     -f Dockerfile \
+    --target distroless \
     --build-arg TAG=${TAG} --build-arg COMMIT=${COMMIT} \
+    --build-arg REPO_INFO=${REPO_INFO} \
+    -t ${IMAGE}:${TAG} .
+
+.PHONY: container
+debug-container:
+	docker buildx build \
+    -f Dockerfile \
+    --target debug \
+    --build-arg TAG=${TAG}-debug --build-arg COMMIT=${COMMIT} \
     --build-arg REPO_INFO=${REPO_INFO} \
     -t ${IMAGE}:${TAG} .
 
@@ -190,7 +200,7 @@ test:
 test.integration.dbless:
 	@./scripts/check-container-environment.sh
 	@TEST_DATABASE_MODE="off" GOFLAGS="-tags=integration_tests" go test -v -race \
-		-timeout 15m \
+		-timeout 20m \
 		-parallel $(NCPU) \
 		-covermode=atomic \
 		-coverpkg=$(PKG_LIST) \
@@ -203,7 +213,7 @@ test.integration.dbless:
 test.integration.postgres:
 	@./scripts/check-container-environment.sh
 	@TEST_DATABASE_MODE="postgres" GOFLAGS="-tags=integration_tests" go test -v \
-		-timeout 15m \
+		-timeout 20m \
 		-parallel $(NCPU) \
 		-covermode=atomic \
 		-coverpkg=$(PKG_LIST) \
@@ -215,7 +225,7 @@ test.integration.postgres:
 test.integration.enterprise.postgres:
 	@./scripts/check-container-environment.sh
 	@TEST_DATABASE_MODE="postgres" TEST_KONG_ENTERPRISE="true" GOFLAGS="-tags=integration_tests" go test -v \
-		-timeout 15m \
+		-timeout 20m \
 		-parallel $(NCPU) \
 		-covermode=atomic \
 		-coverpkg=$(PKG_LIST) \

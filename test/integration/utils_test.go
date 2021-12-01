@@ -17,8 +17,8 @@ import (
 	"time"
 
 	"github.com/blang/semver/v4"
+	"github.com/kong/kubernetes-testing-framework/pkg/clusters"
 	"github.com/kong/kubernetes-testing-framework/pkg/environments"
-	"github.com/kong/kubernetes-testing-framework/pkg/utils/kubernetes/generators"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
@@ -63,9 +63,6 @@ var (
 	// ingressClass indicates the ingress class name which the tests will use for supported object reconciliation
 	ingressClass = "kongtests"
 
-	// elsewhere is the name of an alternative namespace
-	elsewhere = "elsewhere"
-
 	// controllerNamespace is the Kubernetes namespace where the controller is deployed
 	controllerNamespace = "kong-system"
 
@@ -76,7 +73,7 @@ var (
 	// NOTE: more namespaces will be loaded dynamically by the test.Main
 	//       during runtime. In general, avoid adding hardcoded namespaces
 	//       to this list as that's reserved for special cases.
-	watchNamespaces = elsewhere
+	watchNamespaces = fmt.Sprintf("%s,%s", extraIngressNamespace, extraWebhookNamespace)
 
 	// env is the primary testing environment object which includes access to the Kubernetes cluster
 	// and all the addons deployed in support of the tests.
@@ -172,7 +169,7 @@ func namespace(t *testing.T) (*corev1.Namespace, func()) {
 	}
 
 	cleanup := func() {
-		assert.NoError(t, generators.CleanupGeneratedResources(ctx, env.Cluster(), t.Name()))
+		assert.NoError(t, clusters.CleanupGeneratedResources(ctx, env.Cluster(), t.Name()))
 	}
 
 	return namespace, cleanup

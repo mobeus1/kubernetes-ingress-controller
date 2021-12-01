@@ -35,12 +35,12 @@ webhooks:
     resources:
     - kongconsumers
     - kongplugins
+    - kongclusterplugins
   - apiGroups:
     - ''
     apiVersions:
     - 'v1'
     operations:
-    - CREATE
     - UPDATE
     resources:
     - secrets
