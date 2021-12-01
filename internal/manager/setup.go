@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/bombsimon/logrusr"
@@ -23,6 +24,8 @@ import (
 	"github.com/kong/kubernetes-ingress-controller/v2/internal/sendconfig"
 	"github.com/kong/kubernetes-ingress-controller/v2/internal/util"
 )
+
+var clientSetup sync.Mutex
 
 // -----------------------------------------------------------------------------
 // Controller Manager - Setup Utility Functions
@@ -92,7 +95,9 @@ func setupControllerOptions(logger logr.Logger, c *Config, scheme *runtime.Schem
 }
 
 func setupKongConfig(ctx context.Context, logger logr.Logger, c *Config) (sendconfig.Kong, error) {
+	clientSetup.Lock()
 	kongClient, err := c.GetKongClient(ctx)
+	clientSetup.Unlock()
 	if err != nil {
 		return sendconfig.Kong{}, fmt.Errorf("unable to build kong api client: %w", err)
 	}
@@ -166,7 +171,9 @@ func setupAdmissionServer(ctx context.Context, managerConfig *Config, managerCli
 
 	logger := log.WithField("component", "admission-server")
 
+	clientSetup.Lock()
 	kongclient, err := managerConfig.GetKongClient(ctx)
+	clientSetup.Unlock()
 	if err != nil {
 		return err
 	}
